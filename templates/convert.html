@@ -1,0 +1,20 @@
+{% extends 'base.html' %} {% block content %}
+<form action="/convert">
+  From:<select type="text" required name="from">
+    {% for code in codes %}
+    <option value="{{ code }}">
+      {{ code }}: {{ codes[code]['description'] }}
+    </option>
+    {% endfor %}
+  </select>
+  To:<select type="text" required name="to">
+    {% for code in codes %}
+    <option value="{{ code }}">
+      {{ code }}: {{ codes[code]['description'] }}
+    </option>
+    {% endfor %}
+  </select>
+  Amount:<input type="number" required name="amount" />
+  <button type="submit">CONVERT</button>
+</form>
+{% endblock %}

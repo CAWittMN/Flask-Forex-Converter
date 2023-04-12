@@ -8,19 +8,6 @@
   </head>
   <body>
     <nav></nav>
-    <form action="/convert">
-      From:<select type="text" required name="from">
-        {% for code in currency_codes %}
-        <option value="{{code}}">{{code}}</option>
-        {% endfor %}
-      </select>
-      To:<select type="text" required name="to">
-        {% for code in currency_codes %}
-        <option value="{{code}}">{{code}}</option>
-        {% endofr %}
-      </select>
-      Amount:<input type="text" required name="amount" />
-      <button type="submit">CONVERT</button>
-    </form>
+    {% block content %} {% endblock %}
   </body>
 </html>
