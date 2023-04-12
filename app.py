@@ -23,10 +23,10 @@ def convert():
     from_currency = request.args.get('from')
     to_currency = request.args.get('to')
     amount = request.args.get('amount')
-
-    response = requests.get(apiURL + f'convert?places=2&from={from_currency}&to={to_currency}&amount={amount}')
-    data = response.json()
-    result = "{:,.2f}".format(data['result'])
-    formatted_amount = "{:,.2f}".format(int(amount))
-
-    return render_template('converted.html', result=result, from_curr=from_currency, amount=formatted_amount, to_curr=to_currency)
+    if currencies.check_valid(to_currency, from_currency):
+        response = requests.get(apiURL + f'convert?places=2&from={from_currency}&to={to_currency}&amount={amount}')
+        data = response.json()
+        result = "{:,.2f}".format(data['result'])
+        formatted_amount = "{:,.2f}".format(int(amount))
+        return render_template('converted.html', result=result, from_curr=from_currency, amount=formatted_amount, to_curr=to_currency)
+    return redirect('/')

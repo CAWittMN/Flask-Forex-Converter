@@ -2,8 +2,8 @@ class Currencies:
     def __init__(self) -> None:
         self.codes = {}
 
-    def check_valid_currency(self, code):
-        return code in self.currencies
+    def check_valid(self, to, from_curr):
+        return to and from_curr in self.codes
     
     def check_if_num(self, amount):
         return isinstance(amount, int)
