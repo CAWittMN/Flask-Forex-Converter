@@ -1,20 +1,27 @@
 {% extends 'base.html' %} {% block content %}
-<form action="/convert">
-  From:<select type="text" required name="from">
+<form action="/check-values">
+  <label for="from">From:</label>
+  <input class="input" type="text" required name="from" /><br />
+  <label for="to">To:</label>
+  <input class="input" type="text" required name="to" /><br />
+  <!--
+  <label for="from">From:</label>
+    <select class='input' required name="from">
     {% for code in codes %}
     <option value="{{ code }}">
       {{ code }}: {{ codes[code]['description'] }}
     </option>
     {% endfor %}
   </select>
-  To:<select type="text" required name="to">
+  To:<select class='input' type="text" required name="to">
     {% for code in codes %}
     <option value="{{ code }}">
       {{ code }}: {{ codes[code]['description'] }}
     </option>
     {% endfor %}
-  </select>
-  Amount:<input type="number" required name="amount" />
+  </select> -->
+  <label for="amount">Amount:</label>
+  <input class="input" required name="amount" /><br />
   <button type="submit">CONVERT</button>
 </form>
 {% endblock %}
