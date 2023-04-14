@@ -1,5 +1,5 @@
 import requests
-from flask import Flask, redirect, request, render_template, flash
+from flask import Flask, redirect, request, render_template, flash, session
 from currencies import Currencies
 
 app = Flask(__name__)
@@ -12,42 +12,51 @@ currencies = Currencies()
 @app.route('/')
 def show_form_page():
     """Show convert form on home page"""
-
-    if currencies.codes == {}:
+    session['codes'] = session.get('codes', {})
+    if session['codes'] == {}:
         """check if codes list has been made and make if not"""
         response = requests.get(apiURL + "symbols")
         data = response.json()
         codes = data['symbols']
-        currencies.make_currency_code_list(codes)
+        session['codes'] = codes
 
-    return render_template('convert.html') # , codes=currencies.codes)
+    return render_template('convert.html') # , codes=session['codes'])
 
-@app.route('/convert')
+@app.route('/converted')
 def convert():
     """show converted currency"""
 
-    from_currency = request.args.get('from')
-    to_currency = request.args.get('to')
-    amount = request.args.get('amount')
+    """check if the form had been filled out succesfully"""
+    check = session.get('success')
+    if check != True:
+        flash('Please completely fill out the form')
+        return redirect('/')
 
-    response = requests.get(apiURL + f'convert?places=2&from={from_currency}&to={to_currency}&amount={amount}')
+    f_currency = session['from']
+    t_currency = session['to']
+    amount = session['amount']
+
+    response = requests.get(apiURL + f'convert?places=2&from={f_currency}&to={t_currency}&amount={amount}')
     data = response.json()
     result = "{:,.2f}".format(data['result'])
 
-    formatted_amount = "{:,.2f}".format(int(amount))
+    session['amount'] = "{:,.2f}".format(float(amount))
+    session['result'] = result
 
-    return render_template('converted.html', result=result, from_curr=from_currency, amount=formatted_amount, to_curr=to_currency)
 
-@app.route('/check-values')
+    return render_template('converted.html', result=result)
+
+@app.route('/check-values', methods=['POST'])
 def check_values():
-    """check validity of form values"""
+    """check validity of form values and save to session"""
 
-    from_currency = request.args.get('from')
-    to_currency = request.args.get('to')
-    amount = request.args.get('amount')
+    from_currency = request.form.get('from')
+    to_currency = request.form.get('to')
+    amount = request.form.get('amount')
+    codes = session.get('codes',{})
 
-    from_pass = currencies.check_valid(from_currency)
-    to_pass = currencies.check_valid(to_currency)
+    from_pass = currencies.check_valid(from_currency, codes)
+    to_pass = currencies.check_valid(to_currency, codes)
     amount_pass = currencies.check_if_num(amount)
 
     if from_pass == False:
@@ -56,7 +65,12 @@ def check_values():
         flash(f'{to_currency} is not a valid currency')
     if amount_pass == False:
         flash(f'{amount} is not a valid number')
+
     if from_pass and to_pass and amount_pass == True:
-        return redirect(f'/convert?from={from_currency}&to={to_currency}&amount={amount}')
+        session['from'] = str.upper(from_currency)
+        session['to'] = str.upper(to_currency)
+        session['amount'] = amount
+        session['success'] = True
+        return redirect('/converted')
     
     return redirect('/')

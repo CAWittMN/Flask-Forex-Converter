@@ -1,22 +1,19 @@
 class Currencies:
-    """Hold currency codes and handles validity checks"""
+    """handle validity checks"""
 
-    def __init__(self) -> None:
-        """initiate"""
-        self.codes = {}
 
-    def check_valid(self, currency):
+    def check_valid(self, currency, codes):
         """check if code is in codes list"""
-        return currency in self.codes
+        try:
+            upper_currency = str.upper(currency)
+        except:
+            return False
+        return upper_currency in codes
     
     def check_if_num(self, amount):
         """check if amount is a number bigger than 0"""
         try:
-            amount_int = int(amount)
+            amount_int = float(amount)
         except:
             return False
-        return isinstance(amount_int, int) and amount_int >=0
-    
-    def make_currency_code_list(self, codes):
-        """make codes list"""
-        self.codes = codes
+        return isinstance(amount_int, float) and amount_int >=0
