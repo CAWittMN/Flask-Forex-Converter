@@ -13,6 +13,7 @@ currencies = Currencies()
 def show_form_page():
     """Show convert form on home page"""
     session['codes'] = session.get('codes', {})
+    session['success'] = session.get('success', False)
     if session['codes'] == {}:
         """check if codes list has been made and make if not"""
         response = requests.get(apiURL + "symbols")
@@ -27,16 +28,16 @@ def convert():
     """show converted currency"""
 
     """check if the form had been filled out succesfully"""
-    check = session.get('success')
-    if check != True:
+    check_complete = session.get('success', False)
+    if check_complete != True:
         flash('Please completely fill out the form')
         return redirect('/')
 
-    f_currency = session['from']
-    t_currency = session['to']
+    from_currency = session['from']
+    to_currency = session['to']
     amount = session['amount']
 
-    response = requests.get(apiURL + f'convert?places=2&from={f_currency}&to={t_currency}&amount={amount}')
+    response = requests.get(apiURL + f'convert?places=2&from={from_currency}&to={to_currency}&amount={amount}')
     data = response.json()
     result = "{:,.2f}".format(data['result'])
 
@@ -55,18 +56,18 @@ def check_values():
     amount = request.form.get('amount')
     codes = session.get('codes',{})
 
-    from_pass = currencies.check_valid(from_currency, codes)
-    to_pass = currencies.check_valid(to_currency, codes)
-    amount_pass = currencies.check_if_num(amount)
+    from_is_valid = currencies.check_valid(from_currency, codes)
+    to_is_valid = currencies.check_valid(to_currency, codes)
+    amount_is_valid = currencies.check_if_num(amount)
 
-    if from_pass == False:
+    if from_is_valid == False:
         flash(f'{from_currency} is not a valid currency')
-    if to_pass == False:
+    if to_is_valid == False:
         flash(f'{to_currency} is not a valid currency')
-    if amount_pass == False:
+    if amount_is_valid == False:
         flash(f'{amount} is not a valid number')
 
-    if from_pass and to_pass and amount_pass == True:
+    if from_is_valid and to_is_valid and amount_is_valid == True:
         session['from'] = str.upper(from_currency)
         session['to'] = str.upper(to_currency)
         session['amount'] = amount

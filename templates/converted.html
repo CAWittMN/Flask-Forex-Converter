@@ -1,9 +1,9 @@
 {% extends 'base.html' %} {% block content %}
-<p>
-  {{ session['amount'] }} {{ session['from'] }} is equal to {{ result }} {{
-  session['to'] }}.
-</p>
-<form action="/">
-  <button>HOME</button>
-</form>
+<div class="result-box">
+  <div class="result">
+    {{ session['amount'] }} {{ session['from'] }} is equal to {{ result }} {{
+    session['to'] }}.
+  </div>
+  <a href="/" class="btn">HOME</a>
+</div>
 {% endblock %}
